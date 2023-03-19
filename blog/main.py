@@ -1,7 +1,9 @@
-from fastapi import FastAPI,Depends,status,Response,HTTPException
+from fastapi import FastAPI,Depends,status,Response,HTTPException,Body
 from . import schemas,models
+from .schemas import Contact
 from .database import engine,SessionLocal
 from sqlalchemy.orm import Session
+
 
 
 
@@ -25,11 +27,21 @@ def get_db():
 
 @app.post('/blog', status_code=status.HTTP_201_CREATED)
 def create(request:schemas.Blog,db :Session =Depends(get_db)):
-    new_blog = models.Blog(title=request.title,body=request.body)
+    new_blog = models.Blog(hotel_name=request.hotel_name,address=request.address,multi_type_hotel=request.multi_type_hotel,
+    star_rating=request.star_rating,currency=request.currency,property_description=request.property_description,property_highlights=request.property_highlights 
+    )
     db.add(new_blog)
     db.commit()
     db.refresh(new_blog)
     return new_blog
+
+@app.post('/contact', status_code=status.HTTP_201_CREATED)
+def create_contact(request:schemas.Contact,db :Session =Depends(get_db)):
+    new_contact= models.Contact(owner_nmb=request.owner_nmb, manger_nmb=request.manger_nmb,front_office_nmbr=request.front_office_nmbr)
+    db.add(new_contact)
+    db.commit()
+    db.refresh(new_contact)
+    return new_contact
 
 @app.delete('/blog/{id}',status_code=status.HTTP_204_NO_CONTENT)
 def delete(id,db :Session =Depends(get_db)):
@@ -60,8 +72,16 @@ def update(id,request:schemas.Blog,db :Session =Depends(get_db)):
 
 @app.get('/blog')
 def all(db :Session =Depends(get_db)):
+
     blogs = db.query(models.Blog).all()
+
     return blogs
+
+@app.get('/contact')
+def all(db :Session =Depends(get_db)):
+    contacts = db.query(models.Contact).all()
+    return contacts
+
 
 @app.get('/blog/{id}',status_code=200,response_model=schemas.ShowBlog)
 def show(id, response:Response ,db :Session =Depends(get_db)):
