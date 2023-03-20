@@ -17,6 +17,7 @@ class Blog(BaseModel):
 
 class ShowBlog(BaseModel):
     hotel_name: str
+    address:str
     class Config:
        orm_mode = True
 
@@ -25,3 +26,8 @@ class Contact(BaseModel):
     manger_nmb: int
     front_office_nmbr :int
 
+
+class User(BaseModel):
+    name:str
+    email:str
+    password:str
